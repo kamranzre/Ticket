@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{CC66035F-DCDD-4CA6-8330-8B99E05DB3EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketProject", "Shop\TicketProject.csproj", "{5FCE370A-EDF2-41CB-BCF2-82E197AF86A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketProject", "Ticket\TicketProject.csproj", "{5FCE370A-EDF2-41CB-BCF2-82E197AF86A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOC", "IOC\IOC.csproj", "{118E5ADC-B19B-44BB-9233-255C3EBEBB32}"
 EndProject

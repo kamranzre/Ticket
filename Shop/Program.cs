@@ -1,11 +1,29 @@
+using Core.Entities;
+using Infrastructure.Data;
+using Infrastructure.Identity;
 using IOC;
+using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddControllersWithViews();
 // Add services to the container.
 builder.Services.RegisterService(builder.Configuration);
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+               .AddEntityFrameworkStores<AppIdentityDbContext>()
+               .AddDefaultTokenProviders();
+
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await IdentitySeeder.SeedRoles(roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -19,7 +37,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

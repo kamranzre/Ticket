@@ -7,17 +7,13 @@ using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public class BaseEntity
+    public class BaseEntity<T>
     {
         [Key]
-        public long Id { get; set; }
+        public T Id { get; set; }
 
         public DateTime CreateDate { get; set; }
 
         public DateTime? EditationDate { get; set; }
-
-        public long UserCreate { get; set; }
-
-        public long? UserEditation { get; set; }
     }
 }

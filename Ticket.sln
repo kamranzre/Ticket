@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{6E2E2858-BA9C-42C3-B499-7A5B7C4FE76E}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{CC66035F-DCDD-4CA6-8330-8B99E05DB3EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop", "Shop\Shop.csproj", "{5FCE370A-EDF2-41CB-BCF2-82E197AF86A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketProject", "Shop\TicketProject.csproj", "{5FCE370A-EDF2-41CB-BCF2-82E197AF86A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOC", "IOC\IOC.csproj", "{118E5ADC-B19B-44BB-9233-255C3EBEBB32}"
 EndProject
@@ -47,5 +47,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5FCE370A-EDF2-41CB-BCF2-82E197AF86A5} = {CC66035F-DCDD-4CA6-8330-8B99E05DB3EA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2F39036-7CE8-4C18-9EC5-C167FB1D00EC}
 	EndGlobalSection
 EndGlobal

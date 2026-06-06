@@ -167,7 +167,7 @@ namespace TicketProject.Controllers
 
             if (model.Role == 2)
                 await _userManager.AddToRoleAsync(user, Roles.Support);
-            return View(new ChangeUserRoleViewModel{ Message = "عملیات با موفقیت انجام شد" });
+            return View(new ChangeUserRoleViewModel { Message = "عملیات با موفقیت انجام شد" });
         }
 
         #endregion
@@ -217,11 +217,13 @@ namespace TicketProject.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(string username, string newPassword)
+        public async Task<IActionResult> ResetPassword(string username, string newPassword, string code)
         {
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null)
+                return Json(new { success = false });
+            if (user.ResetPasswordCode != code)
                 return Json(new { success = false });
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -241,7 +243,7 @@ namespace TicketProject.Controllers
 
 
 
-      
+
         #endregion
 
     }

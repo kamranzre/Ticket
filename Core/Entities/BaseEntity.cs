@@ -11,9 +11,5 @@ namespace Core.Entities
     {
         [Key]
         public T Id { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime? EditationDate { get; set; }
     }
 }

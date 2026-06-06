@@ -1,7 +1,11 @@
-﻿using Core.Constants;
+﻿using Application.Helpers;
+using Core.Constants;
 using Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using TicketProject.ViewModels;
 
 namespace TicketProject.Controllers
 {
@@ -113,14 +117,132 @@ namespace TicketProject.Controllers
         #endregion
 
         #region Logout
-        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login");
         }
 
         #endregion
+
+        #region AddRoleToUser
+
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> ChangeUserRole()
+        {
+            var users = _userManager.Users
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.UserName
+                }).ToList();
+
+            var model = new ChangeUserRoleViewModel
+            {
+                Users = users
+            };
+
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> ChangeUserRole(ChangeUserRoleViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+
+            if (user == null)
+                return View(new ChangeUserRoleViewModel { Message = "کاربر یافت نشد" });
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            if (model.Role == 1)
+                await _userManager.AddToRoleAsync(user, Roles.User);
+
+            if (model.Role == 2)
+                await _userManager.AddToRoleAsync(user, Roles.Support);
+            return View(new ChangeUserRoleViewModel{ Message = "عملیات با موفقیت انجام شد" });
+        }
+
+        #endregion
+
+        #region ForgetPassword
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateResetCode(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return Json(new { success = false, message = "User not found" });
+
+            var code = ResetCodeGenerator.Generate();
+
+            user.ResetPasswordCode = code;
+            user.ResetPasswordExpire = DateTime.UtcNow.AddMinutes(10);
+
+            await _userManager.UpdateAsync(user);
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyResetCode(string username, string code)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return Json(new { success = false });
+
+            if (user.ResetPasswordCode != code)
+                return Json(new { success = false });
+
+            if (user.ResetPasswordExpire < DateTime.UtcNow)
+                return Json(new { success = false });
+
+            return Json(new { success = true });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string username, string newPassword)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return Json(new { success = false });
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+                return Json(new { success = false });
+
+            user.ResetPasswordCode = null;
+            user.ResetPasswordExpire = null;
+
+            await _userManager.UpdateAsync(user);
+
+            return Json(new { success = true });
+        }
+
+
+
+      
+        #endregion
+
     }
 }

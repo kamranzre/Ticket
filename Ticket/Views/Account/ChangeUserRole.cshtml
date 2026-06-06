@@ -1,0 +1,31 @@
+﻿@using Core.Enums
+@using TicketProject.ViewModels
+@model ChangeUserRoleViewModel
+<div class="container mt-4">
+
+
+	<form asp-action="ChangeUserRole" method="post">
+		@if (!string.IsNullOrEmpty(Model.Message))
+		{
+			<div class="alert alert-success" role="alert">
+				@Model.Message
+			</div>
+		}
+		<div class="mb-3">
+			<label class="form-label">Select User</label>
+			@await Component.InvokeAsync("UsersList")
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label">Role</label>
+			<select asp-for="Role" asp-items="Html.GetEnumSelectList<UserRoleType>()" class="form-select">
+			</select>
+
+		</div>
+
+		<button type="submit" class="btn btn-primary">
+			Change Role
+		</button>
+
+	</form>
+</div>

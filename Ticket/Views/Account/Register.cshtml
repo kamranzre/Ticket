@@ -1,1 +1,72 @@
-﻿
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h4 class="text-center mb-4">ثبت نام در سایت</h4>
+
+                <form asp-controller="Account" asp-action="Register" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label"></label>
+                        <input asp-for="UserName" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label asp-for="Password" class="form-label"></label>
+
+                        <input asp-for="Password" id="passwordInput" class="form-control" />
+
+                        <span onclick="togglePassword()"
+                              style="position:absolute; left:10px; top:38px; cursor:pointer;">
+                            <i id="eyeIcon" class="fa fa-eye-slash"></i>
+                        </span>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">ثبت نام</button>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    function togglePassword() {
+        var input = document.getElementById("passwordInput");
+        var icon = document.getElementById("eyeIcon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        }
+    }
+</script>
+

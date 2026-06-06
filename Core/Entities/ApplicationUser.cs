@@ -11,5 +11,8 @@ namespace Core.Entities
     {
         public string? FullName { get; set; }
         public bool IsActive { get; set; }
+
+        public string? ResetPasswordCode { get; set; }
+        public DateTime? ResetPasswordExpire { get; set; }
     }
 }

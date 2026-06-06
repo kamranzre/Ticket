@@ -3,15 +3,25 @@ using Infrastructure.Data;
 using Infrastructure.Identity;
 using IOC;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
 // Add services to the container.
 builder.Services.RegisterService(builder.Configuration);
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+    options.Password.RequireDigit = true;         
+    options.Password.RequireLowercase = true;      
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
+})
                .AddEntityFrameworkStores<AppIdentityDbContext>()
                .AddDefaultTokenProviders();
 

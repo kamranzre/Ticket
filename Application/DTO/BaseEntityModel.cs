@@ -7,17 +7,9 @@ using System.Threading.Tasks;
 
 namespace Application.DTO
 {
-    public class BaseEntityModel
+    public class BaseEntityModel<T>
     {
         [Key]
-        public long Id { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime EditationDate { get; set; }
-
-        public long UserCreate { get; set; }
-
-        public long UserEditation { get; set; }
+        public T Id { get; set; }
     }
 }

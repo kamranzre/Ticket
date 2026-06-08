@@ -1,0 +1,86 @@
+﻿<link rel="stylesheet" href="~/css/ticketDetail.css">
+@using Application.DTO.Tickets
+@model TicketDetailViewModel
+@{
+	bool chatShow = false;
+	@if (Model.UserRole == Core.Enums.UserRoleType.User && Model.Status != Core.Enums.TicketStatus.Closed)
+	{
+		chatShow = true;
+	}
+	@if (Model.UserRole == Core.Enums.UserRoleType.Support && Model.Status != Core.Enums.TicketStatus.Closed && Model.AssignedExpertId == Model.CurrentUserId)
+	{
+		chatShow = true;
+	}
+
+}
+<div class="full-page-chat">
+
+	<header class="ticket-header">
+		<div class="container-fluid">
+			<div class="row align-items-center">
+				<div class="col-md-8">
+					<h4 class="mb-0 text-truncate">موضوع:@Model.Title</h4>
+					<div class="mt-1">
+						<span class="badge bg-secondary me-2 small">کد: @Model.TicketCode</span>
+						<span class="small text-light opacity-75">ایجاد: @Model.CreatedAt</span>
+					</div>
+				</div>
+				<div class="col-md-4 text-md-start mt-2 mt-md-0">
+					<span class="badge bg-success status-badge p-2">وضعیت: @Model.Status.GetDisplayName()</span>
+					<span class="badge bg-warning text-dark status-badge p-2">اولویت: @Model.Priority.GetDisplayName()</span>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="chat-box">
+		@foreach (var item in Model.Messages)
+		{
+			if (item.SenderId == Model.CurrentUserId)
+			{
+				<div class="msg-sent">
+					<div class="fw-bold small text-success mb-1">@item.SenderName</div>
+					<div>@item.Message</div>
+					<span class="msg-time">
+						@item.CreatedAt.ToString("HH:mm")
+						@if (item.IsRead)
+						{
+							<i class="bi bi-check2-all text-primary"></i>
+						}
+						else
+						{
+							<i class="bi bi-check2 text-muted"></i>
+						}
+					</span>
+				</div>
+			}
+			else
+			{
+				<div class="msg-received">
+					<div class="fw-bold small text-info mb-1">@item.SenderName</div>
+					<div>@item.Message</div>
+					<span class="msg-time">@item.CreatedAt.ToString("HH:mm")</span>
+				</div>
+
+			}
+		}
+	</main>
+
+	@if (chatShow)
+	{
+		<footer class="chat-footer">
+			<div class="container-fluid">
+				<div class="input-wrapper">
+					<textarea class="form-control" id="messageText" placeholder="پیام خود را اینجا بنویسید..." rows="1"></textarea>
+					<button class="btn-send ms-2" data-ticketId="@Model.Id">
+						<i class="bi bi-play-fill fs-3"></i>
+					</button>
+				</div>
+			</div>
+		</footer>
+	}
+</div>
+
+@section Scripts {
+	<script src="~/js/SendMessage.js"></script>
+}

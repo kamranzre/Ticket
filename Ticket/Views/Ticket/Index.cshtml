@@ -1,0 +1,132 @@
+﻿@using Application.DTO.Tickets
+@model TicketViewModel
+
+<div class="row">
+	<div class="col-12">
+		<div class="card shadow">
+			<div class="card-body">
+
+				<partial name="_PartialCreateTicket" model="Model.InsertTicket" />
+
+				<hr class="my-4" />
+
+				<partial name="_PartialTicketList" model="Model" />
+
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+
+	<script src="~/js/insertOrUpdateTicket.js"></script>
+
+	<script>
+
+		$(document).on("click", ".deleteTicket", function () {
+
+			if (confirm("آیا از حذف این تیکت اطمینان دارید؟")) {
+
+				$.ajax({
+					url: "/Ticket/Delete",
+					type: "POST",
+					data: { ticketId: $(this).data("id") },
+					success: function (data) {
+
+						if (data) {
+							alert("تیکت با موفقیت حذف شد");
+							location.reload();
+						}
+						else {
+							alert("شکست در حذف تیکت");
+						}
+
+					}
+				});
+
+			}
+
+		});
+
+		function changePage(pageNumber) {
+
+			const pageSize = @Model.PageSize;
+
+			const url = `/Ticket/Index?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+			window.location.href = url;
+		}
+
+
+
+		$(document).on("click", ".assignTicket", function () {
+
+			var ticketId = $(this).data("id");
+
+			if (!confirm("آیا اطمینان دارید که می‌خواهید این تیکت را به خود ارجاع دهید؟"))
+				return;
+
+			$.ajax({
+				url: '/Ticket/AssignToExpert',
+				type: 'POST',
+				data: {
+					ticketId: ticketId
+				},
+				headers: {
+					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+				},
+				success: function (result) {
+
+					if (result === true){
+						alert("با موفقیت انجام شد");
+							location.reload();
+					}
+					else
+						alert("با شکست مواجه شد");
+
+				},
+				error: function () {
+					alert("خطا در ارتباط با سرور");
+				}
+			});
+
+		});
+
+
+		$(document).on("click", ".closeTicket", function () {
+
+			var ticketId = $(this).data("id");
+
+			if (!confirm("آیا اطمینان دارید که می‌خواهید این تیکت را ببندید؟"))
+				return;
+
+			$.ajax({
+				url: '/Ticket/CloseTicket',
+				type: 'POST',
+				data: {
+					ticketId: ticketId
+				},
+				headers: {
+					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+				},
+				success: function (result) {
+
+					if (result.isSuccess === true){
+						alert("با موفقیت انجام شد");
+							location.reload();
+					}
+					else{
+						alert(result.message);
+					}
+
+				},
+				error: function () {
+					alert("خطا در ارتباط با سرور");
+				}
+			});
+
+		});
+
+	</script>
+
+}

@@ -10,6 +10,7 @@ namespace Core.IRepositories
     public interface IUnitOfWork:IDisposable
     {
         public IRepository<Ticket,int> Tickets { get; }
+        public IRepository<TicketMessage,int> TicketMessages { get; }
         Task<int> CompleteAsync();
         Task ExecuteInTransactionAsync(Func<Task> action);
     }

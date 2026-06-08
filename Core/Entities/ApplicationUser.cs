@@ -14,5 +14,12 @@ namespace Core.Entities
 
         public string? ResetPasswordCode { get; set; }
         public DateTime? ResetPasswordExpire { get; set; }
+
+        public ICollection<Ticket> Users { get; set; } = new List<Ticket>();
+        public ICollection<Ticket> CloseBys { get; set; } = new List<Ticket>();
+        public ICollection<Ticket> AssignedExperts { get; set; } = new List<Ticket>();
+        public ICollection<TicketMessage> Senders { get; set; } = new List<TicketMessage>();
+        public ICollection<SystemNotification> Notifications { get; set; } = new List<SystemNotification>();
+        
     }
 }

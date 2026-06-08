@@ -15,12 +15,14 @@ namespace Infrastructure.Repositories
 {
     public class UnitOfWork : DbContextBase, IUnitOfWork
     {
-        public UnitOfWork(AppDbContext context, IDbConnection dbConnection, IServiceProvider serviceProvider) : base(context, dbConnection)
+        public UnitOfWork(AppDbContext context, string connectionString) : base(context)
         {
-            Tickets = new Repository<Ticket, int>(_context, _dbConnection);
+            Tickets = new Repository<Ticket, int>(_context, connectionString);
+            TicketMessages = new Repository<TicketMessage, int>(_context, connectionString);
         }
 
-        public IRepository<Ticket, int> Tickets { get; }
+        public IRepository<Ticket, int> Tickets { get; set; }
+        public IRepository<TicketMessage, int> TicketMessages { get; set; }
 
         public async Task<int> CompleteAsync()
         {
@@ -39,8 +41,6 @@ namespace Infrastructure.Repositories
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    Console.WriteLine($"RollBack {ex.Message}");
-                    throw;
                 }
             }
         }

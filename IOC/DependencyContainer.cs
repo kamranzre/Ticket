@@ -1,4 +1,6 @@
 ﻿using Application.Services;
+using Application.Services.Ticket;
+using Application.Services.TicketMessage;
 using Core.Entities;
 using Core.IRepositories;
 using Infrastructure.Data;
@@ -20,18 +22,19 @@ namespace IOC
             services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("Ticket")));
 
-            services.AddScoped<IDbConnection>(db =>
-            new SqlConnection(configuration.GetConnectionString("Ticket")));
-
-            services.AddDbContext<AppIdentityDbContext>(options =>
-              options.UseSqlServer(
-                  configuration.GetConnectionString("Ticket")));
-
-
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork>(sp =>
+            {
+                var context = sp.GetRequiredService<AppDbContext>();
+                var connStr = configuration.GetConnectionString("Ticket");
+                return new UnitOfWork(context, connStr);
+            });
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<ITicketMessageService, TicketMessageService>();
+
         }
     }
 }

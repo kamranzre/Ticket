@@ -9,7 +9,7 @@ namespace Core.Enums
         User = 1,
 
         [Display(Name = "کارشناس")]
-        Expert = 2
+        Support = 2
     }
 
 }

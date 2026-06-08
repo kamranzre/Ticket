@@ -1,6 +1,9 @@
 ﻿using Application.Helpers;
+using Application.Services;
+using Application.Services.Ticket;
 using Core.Constants;
 using Core.Entities;
+using Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +15,16 @@ namespace TicketProject.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ITicketService _ticketService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITicketService ticketService, IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _ticketService = ticketService;
+            _userService = userService;
         }
 
         #region SeedCreateAdmin
@@ -153,9 +160,24 @@ namespace TicketProject.Controllers
         public async Task<IActionResult> ChangeUserRole(ChangeUserRoleViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
+            var userRole = await _userService.GetUserRoleAsync(model.UserId);
+            if (userRole == UserRoleType.User && model.Role == (int)UserRoleType.Support) //میخواد کارشناس بشه
+            {
+                var anyTickets = await _ticketService.IsExistTicketAsync(model.UserId);
+                if (anyTickets)
+                    return View(new ChangeUserRoleViewModel { Message = "تیکت ها باید حذف یا بسته شوند", IsSuccess = false });
+            }
+            if(userRole == UserRoleType.Support && model.Role == (int)UserRoleType.User)
+            {
+                var anyTickets = await _ticketService.IsExistTicketAsync(model.UserId,true);
+                if (anyTickets)
+                    return View(new ChangeUserRoleViewModel { Message = "تیکت ها باید حذف یا بسته شوند", IsSuccess = false });
+            }
 
+            //اگر کاربر بخواهد کارشناس شود نباید تیکت باز داشته باشد
+            //اگر کارشناس بخواهد کاربر شود نباید تیکت اساین شده باز داشته باشد
             if (user == null)
-                return View(new ChangeUserRoleViewModel { Message = "کاربر یافت نشد" });
+                return View(new ChangeUserRoleViewModel { Message = "کاربر یافت نشد", IsSuccess = false });
 
             var currentRoles = await _userManager.GetRolesAsync(user);
 
@@ -188,7 +210,7 @@ namespace TicketProject.Controllers
             if (user == null)
                 return Json(new { success = false, message = "User not found" });
 
-            var code = ResetCodeGenerator.Generate();
+            var code = CodeGenerator.CodeGenerate();
 
             user.ResetPasswordCode = code;
             user.ResetPasswordExpire = DateTime.UtcNow.AddMinutes(10);

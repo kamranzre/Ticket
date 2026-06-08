@@ -1,0 +1,93 @@
+﻿@using Application.DTO.Tickets
+@using Core.Enums
+@model TicketViewModel
+<table class="table caption-top">
+	<caption>لیست تیکت ها</caption>
+	<thead class="table-light">
+		<tr>
+			<th>شماره تیکت</th>
+			<th>عنوان</th>
+			<th>وضعیت</th>
+			<th>اولویت</th>
+			<th>کارشناس مربوطه</th>
+			<th>تاریخ ایجاد</th>
+			<th>تاریخ بسته شدن تیکت</th>
+			<th>عملیات</th>
+		</tr>
+	</thead>
+	<tbody>
+		@Html.AntiForgeryToken()
+		@foreach (var item in Model.TicketLists)
+		{
+			string bgColor = "";
+			if ((int)item.TicketStatus != 3)
+			{
+				if ((int)item.TicketPriority == 2)
+					bgColor = "#e38991";
+				else if ((int)item.TicketPriority == 1)
+					bgColor = "#ead183";
+				else if (item.TicketPriority == 0)
+					bgColor = "#7ae192";
+			}
+			<tr style="background-color:@bgColor">
+				<td>
+					<a asp-controller="Ticket"
+					   asp-action="Detail"
+					   asp-route-ticketid="@item.Id"
+					   target="_blank">
+						@item.TicketCode
+					</a>
+				</td>
+				<th scope="row">@item.Title</th>
+				<td>@item.TicketStatus.GetDisplayName()</td>
+				<td>@item.TicketPriority.GetDisplayName()</td>
+				<td>@item.AssignedExpertName</td>
+				<td>@item.CreatedAt</td>
+				<td>@item.ClosedAt</td>
+				<td>
+					@if (Model.UserRoleType == UserRoleType.User || (Model.UserRoleType == UserRoleType.Support && item.AssignedExpert == Model.UserId))
+					{
+						if (item.TicketStatus != TicketStatus.Closed)
+						{
+							<a class="btn closeTicket" data-id="@item.Id" title="بستن تیکت">
+								<i class="fa fa-window-close"></i>
+							</a>
+						}
+					}
+
+					@if (Model.UserRoleType == UserRoleType.User)
+					{
+						<a class="btn deleteTicket" style="color:red" data-id="@item.Id" title="حذف تیکت">
+							<i class="fa fa-trash"></i>
+						</a>
+					}
+					@if (string.IsNullOrEmpty(item.AssignedExpert) && Model.UserRoleType == UserRoleType.Support)
+					{
+						<a class="btn assignTicket" style="color:darkblue" data-id="@item.Id" title="ارجاع تیکت">
+							<i class="fas fa-headset"></i>
+						</a>
+					}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@{
+	var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<nav>
+	<ul class="pagination justify-content-center">
+
+		@for (int i = 1; i <= totalPages; i++)
+		{
+			<li class="page-item @(Model.PageNumber == i ? "active" : "")">
+				<a class="page-link" href="javascript:void(0)" onclick="changePage(@i)">
+					@i
+				</a>
+			</li>
+		}
+
+	</ul>
+</nav>
